@@ -44,19 +44,25 @@ void Graphic::plot(float left, float right, float step) {
 }
 
 float Graphic::getY(float X) {
-    int _mod;
-    int center;
-    if (X < 0) {
-        center = int((X - R) / 2) * 2;
-        _mod = abs((int(X) - R) % 4);
+    float startFrgm;
+//    if (abs((int)shift) % frgmSize) {
+        if (X < 0) {
+            startFrgm = (int)(X - 1) / frgmSize() * frgmSize() - 1;
+        } else {
+            startFrgm = (int)(X + 1) / frgmSize() * frgmSize() - 1;
+        }
+//    } else {
+//        if (X < 0) {
+//            startFrgm = (int)(X) / frgmSize() * frgmSize() - 2;
+//        } else {
+//            startFrgm = (int)(X) / frgmSize() * frgmSize();
+//        }
+//    }
+    LinearFragment frgm(startFrgm, frgmSize());
+    if (isSemicircle(frgm)) {
+        return -semicircle(X, frgm.center());
     } else {
-        center = int((X + R) / 2) * 2;
-        _mod = abs((int(X) + R) % 4);
-    }
-    if (((_mod > 0) && (T/2 <= _mod) && (_mod < T))) {
-        return -semicircle(X, center);
-    } else {
-        return tooth(X, center);
+        return tooth(X, frgm.center());
     }
 }
 
@@ -64,10 +70,19 @@ float Graphic::sheet(float x) {
     return x;
 }
 
+bool Graphic::isSemicircle(const LinearFragment &frgm) {
+    static LinearFragment circleFrgm(-1, frgmSize(), 0);
+    return (abs((int)frgm.shift(circleFrgm) / frgmSize()) % frgmSize());
+}
+
 float Graphic::tooth(float X, int center) {
-    return abs(T / 2 * abs(X - center) - R) - R;
+    return abs(frgmSize() * abs(X - center) - R) - R;
 }
 
 float Graphic::semicircle(float x, int center) {
     return -sqrt(pow(R, 2) - pow(x - center, 2));
+}
+
+int Graphic::frgmSize() {
+    return T / 2;
 }

@@ -31,7 +31,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::draw() {
     Graphic g(1, 4);
-    g.plot(-10, 10, 0.1);
+    g.plot(-2, 4, 0.1);
 }
 
 void MainWindow::calculate() {
